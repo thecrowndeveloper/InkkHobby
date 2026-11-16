@@ -8,13 +8,22 @@
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   };
 
-  // Theme (paper / ink)
-  var themeBtn = $("[data-theme-toggle]");
-  if (themeBtn) themeBtn.addEventListener("click", function () {
-    var next = document.documentElement.dataset.theme === "dark" ? "paper" : "dark";
-    document.documentElement.dataset.theme = next;
-    store.set("ink-theme", next);
+  // Site theme: dark (default) or light. The startup script in <head> applies the saved choice before first paint.
+  var root = document.documentElement;
+  var syncThemeUI = function () {
+    var light = root.dataset.theme === "light";
+    $$("[data-theme-label]").forEach(function (el) { el.textContent = light ? "dark" : "light"; });
+    $$("[data-theme-toggle]").forEach(function (b) { b.setAttribute("aria-pressed", String(light)); });
+  };
+  $$("[data-theme-toggle]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light";
+      store.set("ink-theme", root.dataset.theme);
+      syncThemeUI();
+      document.dispatchEvent(new CustomEvent("ink:theme"));
+    });
   });
+  syncThemeUI();
 
   // Mobile nav
   var navBtn = $("[data-nav-toggle]"), nav = $("#primary-nav");
@@ -96,10 +105,19 @@
   var widths = [34, 38, 46], wi = parseInt(store.get("ink-width") || "1", 10);
   var applySize = function () { reader.style.setProperty("--rs", size + "rem"); };
   var applyWidth = function () { reader.style.setProperty("--rw", widths[wi] + "rem"); };
+  // Reader theme: "auto" follows the site theme; dark / light / sepia are explicit overrides.
   var themeSel = $("[data-reader-theme-select]", reader);
-  var savedTheme = store.get("ink-reader-theme") || "night";
-  reader.dataset.readerTheme = savedTheme;
-  if (themeSel) { themeSel.value = savedTheme; themeSel.addEventListener("change", function () { reader.dataset.readerTheme = themeSel.value; store.set("ink-reader-theme", themeSel.value); }); }
+  var VALID = { night: 1, paper: 1, sepia: 1 };
+  var savedTheme = store.get("ink-reader-theme");
+  if (!VALID[savedTheme]) savedTheme = "auto";
+  var applyReaderTheme = function (v) {
+    if (VALID[v]) reader.dataset.readerTheme = v; else reader.removeAttribute("data-reader-theme");
+  };
+  applyReaderTheme(savedTheme);
+  if (themeSel) {
+    themeSel.value = savedTheme;
+    themeSel.addEventListener("change", function () { applyReaderTheme(themeSel.value); store.set("ink-reader-theme", themeSel.value); });
+  }
   applySize(); applyWidth();
 
   $$("[data-size]", reader).forEach(function (b) {

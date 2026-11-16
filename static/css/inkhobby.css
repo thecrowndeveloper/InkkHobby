@@ -125,6 +125,9 @@ code { font-size: .88em; background: var(--raised); padding: .12em .4em; border-
 .icon-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; display: grid; place-items: center; }
 .icon-btn:hover { color: var(--text); border-color: var(--muted); }
 .icon-btn svg { width: 17px; height: 17px; }
+.ico-moon { display: none; } :root[data-theme="light"] .ico-sun { display: none; } :root[data-theme="light"] .ico-moon { display: block; }
+.nav-theme { display: none; align-items: center; padding: .5rem .8rem; border: 0; border-radius: 8px; background: none; color: var(--muted); font: 500 .9rem var(--ui); cursor: pointer; text-align: left; }
+.nav-theme:hover { color: var(--text); background: var(--raised); }
 .daily { display: inline-flex; align-items: center; gap: .5rem; font: 600 .8rem var(--ui); padding: .55rem .85rem; border-radius: 999px; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); border: 0; cursor: pointer; white-space: nowrap; }
 .daily:hover { background: color-mix(in srgb, var(--accent) 26%, transparent); color: var(--accent); }
 .daily--done { background: var(--raised); color: var(--muted); cursor: default; }
@@ -151,6 +154,7 @@ code { font-size: .88em; background: var(--raised); padding: .12em .4em; border-
   .site-header__tools { margin-left: 0; gap: .4rem; }
   .daily { font-size: 0; padding: .6rem; gap: 0; } .daily--done { font-size: .78rem; gap: .3rem; }
   .site-header__tools .icon-btn { display: none; }
+  .nav-theme { display: block; }
 }
 
 /* ---------- Toasts ---------- */
@@ -184,7 +188,7 @@ code { font-size: .88em; background: var(--raised); padding: .12em .4em; border-
 .spot__slide.is-active { display: grid; animation: fade .5s ease both; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } }
 .spot__badges { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.1rem; }
-.badge { font: 700 .72rem/1 var(--ui); letter-spacing: .06em; text-transform: uppercase; padding: .45rem .65rem; border-radius: 6px; background: rgb(255 255 255 / .12); backdrop-filter: blur(6px); }
+.badge { font: 700 .72rem/1 var(--ui); letter-spacing: .06em; text-transform: uppercase; padding: .45rem .65rem; border-radius: 6px; background: color-mix(in srgb, var(--text) 13%, transparent); backdrop-filter: blur(6px); }
 .badge--hot { background: var(--accent); color: var(--accent-ink); }
 .spot__title { font-size: clamp(2.4rem, 5.6vw, 4.6rem); font-weight: 800; letter-spacing: -.04em; line-height: 1; margin-bottom: .6rem; max-width: 16ch; }
 .spot__by { font-size: 1.05rem; color: var(--muted); margin-bottom: 1.1rem; }
