@@ -302,10 +302,17 @@ code { font-size: .88em; background: var(--raised); padding: .12em .4em; border-
 .stats strong { font: 750 1.35rem/1 var(--ui); letter-spacing: -.02em; }
 .stats span { font: 500 .76rem var(--ui); color: var(--muted); }
 .actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; margin: 0 0 1.4rem; }
-.share { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; font: 500 .8rem var(--ui); }
+.share { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font: 500 .8rem var(--ui); }
 .share__label { color: var(--muted); font-weight: 600; margin-right: .3rem; }
-.share a, .share button { padding: .5rem .8rem; border-radius: 999px; background: var(--raised); color: var(--text); border: 0; cursor: pointer; font: inherit; }
-.share a:hover, .share button:hover { background: var(--line); color: var(--text); }
+.share__btn { display: inline-grid; place-items: center; width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 0; background: var(--raised); color: var(--text); cursor: pointer; transition: background .2s, color .2s, transform .15s; }
+.share__btn svg { width: 18px; height: 18px; }
+.share .share__btn:hover { transform: translateY(-2px); }
+.share .share__btn--x:hover { background: var(--text); color: var(--bg); }
+.share .share__btn--fb:hover { background: #1877f2; color: #fff; }
+.share .share__btn--wa:hover { background: #25d366; color: #fff; }
+.share .share__btn--tg:hover { background: #229ed9; color: #fff; }
+.share .share__btn.is-copied { background: var(--good); color: #04180e; }
+.share__note { font: 600 .78rem var(--ui); color: var(--good); }
 .subnav { position: sticky; top: var(--header); z-index: 40; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line-soft); }
 .subnav .wrap { display: flex; gap: .25rem; }
 .subnav a { padding: 1rem .9rem; font: 600 .88rem var(--ui); color: var(--muted); border-bottom: 2px solid transparent; }
@@ -415,7 +422,7 @@ code { font-size: .88em; background: var(--raised); padding: .12em .4em; border-
 .chapter-nav > :first-child { justify-self: start; } .chapter-nav > :last-child { justify-self: end; }
 .reader-shell .btn--ghost { color: var(--rfg); border-color: var(--rline); }
 .reader-shell .btn--ghost:hover { border-color: var(--rmuted); }
-.reader-shell .share a, .reader-shell .share button { background: color-mix(in srgb, var(--rfg) 8%, transparent); color: var(--rfg); }
+.reader-shell .share .share__btn:not(:hover):not(.is-copied) { background: color-mix(in srgb, var(--rfg) 9%, transparent); color: var(--rfg); }
 .reader-shell .share__label { color: var(--rmuted); }
 .comments { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--rline); font-size: .95rem; }
 .comments textarea { background: transparent; color: var(--rfg); border-color: var(--rline); }

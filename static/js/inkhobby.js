@@ -51,20 +51,20 @@
     });
   }
 
-  // Share: copy link, or use the native share sheet where available
+  // Share: copy-link button, plus a native share sheet (which includes Instagram) where the browser offers one
   $$("[data-share]").forEach(function (box) {
-    var btn = $("[data-copy-link]", box);
-    if (!btn) return;
-    btn.addEventListener("click", function () {
-      var url = box.dataset.url, title = box.dataset.title;
-      if (navigator.share && /Mobi|Android/i.test(navigator.userAgent)) {
-        navigator.share({ title: title, url: url }).catch(function () {});
-        return;
-      }
-      var done = function () { btn.textContent = "Copied ✓"; setTimeout(function () { btn.textContent = "Copy link"; }, 2000); };
+    var url = box.dataset.url, title = box.dataset.title;
+    var note = $("[data-share-note]", box), copy = $("[data-copy-link]", box), more = $("[data-native-share]", box);
+    var say = function (msg) { if (note) { note.textContent = msg; setTimeout(function () { note.textContent = ""; }, 2200); } };
+    if (copy) copy.addEventListener("click", function () {
+      var done = function () { copy.classList.add("is-copied"); say("Link copied"); setTimeout(function () { copy.classList.remove("is-copied"); }, 2200); };
       if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () { window.prompt("Copy this link", url); });
       else window.prompt("Copy this link", url);
     });
+    if (more && navigator.share) {
+      more.hidden = false;
+      more.addEventListener("click", function () { navigator.share({ title: title, url: url }).catch(function () {}); });
+    }
   });
 
   // Home spotlight: thumbnails switch the featured story, auto-advancing until the visitor interacts
