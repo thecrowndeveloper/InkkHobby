@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Contact · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="wrap section contact-grid">
+  <div>
+    <p class="eyebrow">Contact</p>
+    <h1>Say hello.</h1>
+    <p class="lede">Questions about your account, a contract, a job, or a story that's gone missing? Write to us and a real person will reply.</p>
+    <dl class="contact-list">
+      <dt>Email</dt><dd><a href="mailto:{{ SITE_CONTACT_EMAIL }}">{{ SITE_CONTACT_EMAIL }}</a></dd>
+      <dt>Quick answers</dt><dd><a href="{% url 'pages:faq' %}">Read the FAQs</a></dd>
+    </dl>
+  </div>
+  <form class="card form" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn--gold btn--lg" type="submit">Send message</button>
+  </form>
+</section>
+{% endblock %}

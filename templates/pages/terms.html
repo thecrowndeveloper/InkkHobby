@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Terms &amp; conditions · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+{# DRAFT: starter text only. Have a qualified lawyer review and adapt before launch. #}
+<section class="wrap wrap--narrow section prose-page">
+  <p class="eyebrow">Legal</p>
+  <h1>Terms &amp; conditions</h1>
+  <p class="muted">Last updated: {% now "j F Y" %}</p>
+
+  <h2>1. Using InkHobby</h2>
+  <p>By creating an account or using InkHobby you agree to these terms. You must be old enough to form a binding contract where you live, and you are responsible for keeping your sign-in details safe.</p>
+
+  <h2>2. Your content</h2>
+  <p>Authors keep the copyright in the stories they publish. By publishing on InkHobby you give us a licence to host, display, translate on request, promote and distribute your work on the platform for as long as it is published here, and as set out in any contract between you and InkHobby. You confirm that you own or have the right to publish what you upload.</p>
+
+  <h2>3. Contracts and earnings</h2>
+  <p>Exclusive and non-exclusive contracts are governed by the individual agreement offered for each story. Earnings are calculated from coins spent by readers on that story, at the share stated in your contract.</p>
+
+  <h2>4. Coins and unlocking chapters</h2>
+  <p>Coins are a virtual credit used to unlock chapters. They have no cash value, cannot be transferred between accounts, and purchases are non-refundable except where the law requires otherwise. Daily Ink coins are a free gift and may be changed or withdrawn with notice.</p>
+
+  <h2>5. Conduct</h2>
+  <p>Do not post unlawful, hateful or infringing material, harass other members, attempt to bypass chapter locks, or misuse the translation or any other feature. We may remove content or suspend accounts that break these rules.</p>
+
+  <h2>6. Jobs</h2>
+  <p>InkHobby lists work opportunities but is not a party to arrangements between people who hire and people who are hired unless we say so in the listing.</p>
+
+  <h2>7. Translations</h2>
+  <p>Translations are generated automatically and may contain errors. They are offered for convenience only.</p>
+
+  <h2>8. Liability and changes</h2>
+  <p>InkHobby is provided as is, to the extent the law allows. We may update these terms from time to time and will post the new version here.</p>
+
+  <h2>9. Contact</h2>
+  <p>Questions about these terms? Write to <a href="mailto:{{ SITE_CONTACT_EMAIL }}">{{ SITE_CONTACT_EMAIL }}</a>.</p>
+</section>
+{% endblock %}

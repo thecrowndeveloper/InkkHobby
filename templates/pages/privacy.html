@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Privacy · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+{# DRAFT: starter text only. Have a qualified lawyer review and adapt before launch (e.g. NDPA/GDPR requirements). #}
+<section class="wrap wrap--narrow section prose-page">
+  <p class="eyebrow">Legal</p>
+  <h1>Privacy</h1>
+  <p class="muted">Last updated: {% now "j F Y" %}</p>
+
+  <h2>What we collect</h2>
+  <p>Your email address, your name or pen name, and what you do on InkHobby: the stories you save, the chapters you unlock, your reviews and comments, and your coin activity. If you sign in with Google we receive your email address and basic profile details from Google.</p>
+
+  <h2>How we use it</h2>
+  <p>To run your account, deliver the stories you ask for, calculate author earnings, keep the platform safe, and reply when you contact us.</p>
+
+  <h2>Translation</h2>
+  <p>When you translate a chapter, its text is sent to our translation provider and the result is stored so it can be reused.</p>
+
+  <h2>Sharing</h2>
+  <p>We do not sell your personal information. We use service providers (for example hosting, email and payment processing) who handle data on our behalf.</p>
+
+  <h2>Your choices</h2>
+  <p>You can ask us to access, correct or delete your account data by writing to <a href="mailto:{{ SITE_CONTACT_EMAIL }}">{{ SITE_CONTACT_EMAIL }}</a>.</p>
+</section>
+{% endblock %}

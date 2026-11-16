@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}FAQs · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="wrap wrap--narrow section">
+  <p class="eyebrow">FAQs</p>
+  <h1>Good questions.</h1>
+  <div class="faq">
+    {% for q, a in faqs %}
+    <details><summary>{{ q }}</summary><p>{{ a }}</p></details>
+    {% endfor %}
+  </div>
+  <p class="muted">Still curious? <a href="{% url 'pages:contact' %}">Ask us directly.</a></p>
+</section>
+{% endblock %}

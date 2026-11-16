@@ -1,0 +1,7 @@
+{% load ink %}
+<article class="book-card">
+  <a class="book-card__cover" href="{{ book.get_absolute_url }}" tabindex="-1" aria-hidden="true">{% include "partials/_cover.html" %}</a>
+  <h3 class="book-card__title"><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></h3>
+  <p class="book-card__author">{{ book.author.profile.display_name }}</p>
+  <p class="book-card__meta">{{ book.get_kind_display }}{% if book.avg_rating %} · <span class="rating">★ {{ book.avg_rating|floatformat:1 }}</span>{% endif %}</p>
+</article>

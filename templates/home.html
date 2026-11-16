@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% load ink %}
+
+{% block main %}
+{% if spotlight %}
+<section class="spot" data-spotlight aria-label="Featured stories">
+  <div class="spot__bg" style="--h: {{ spotlight.0.cover_hue }}" data-spot-bg></div>
+  <div class="wrap">
+    {% for book in spotlight %}
+    <div class="spot__slide {% if forloop.first %}is-active{% endif %}" data-slide data-hue="{{ book.cover_hue }}">
+      <div>
+        <div class="spot__badges">
+          {% if forloop.first %}<span class="badge badge--hot">Trending now</span>{% endif %}
+          <span class="badge">{{ book.get_kind_display }}</span>
+          {% for g in book.genres.all|slice:":2" %}<span class="badge">{{ g.name }}</span>{% endfor %}
+        </div>
+        <h1 class="spot__title">{{ book.title }}</h1>
+        <p class="spot__by">by <a href="{% url 'books:writer' book.author.pk %}">{{ book.author.profile.display_name }}</a></p>
+        <p class="spot__syn">{{ book.synopsis }}</p>
+        <p class="spot__meta">
+          {% if book.avg_rating %}<span><strong class="rating">★ {{ book.avg_rating|floatformat:1 }}</strong></span>{% endif %}
+          <span><strong>{{ book.word_count|compact }}</strong> words</span>
+          <span><strong>{{ book.chapter_count }}</strong> chapters</span>
+          <span><strong>{{ book.library_count|compact }}</strong> in libraries</span>
+        </p>
+        <div class="actions">
+          <a class="btn btn--primary btn--lg" href="{{ book.get_absolute_url }}">Read now</a>
+          <a class="btn btn--ghost btn--lg" href="{{ book.get_absolute_url }}#chapters">Chapters</a>
+        </div>
+      </div>
+      <a class="spot__cover" href="{{ book.get_absolute_url }}" tabindex="-1" aria-hidden="true">{% include "partials/_cover.html" %}</a>
+    </div>
+    {% endfor %}
+    {% if spotlight|length > 1 %}
+    <div class="spot__nav" role="tablist" aria-label="Choose a featured story">
+      {% for book in spotlight %}
+      <button class="spot__thumb {% if forloop.first %}is-active{% endif %}" type="button" role="tab" data-thumb aria-label="{{ book.title }}">{% include "partials/_cover.html" %}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% else %}
+<section class="wrap section">
+  <h1>Stories worth staying up for.</h1>
+  <p class="empty">The shelves are being stocked. Run <code>python manage.py seed_demo</code> to add demo stories.</p>
+</section>
+{% endif %}
+
+{% if user.is_authenticated %}
+{% if continue_reading %}
+<section class="wrap section">
+  <header class="section-head"><h2>Continue reading</h2><a href="{% url 'books:library' %}">Library →</a></header>
+  <div class="continue">
+    {% for r in continue_reading %}
+    <a class="resume" href="{{ r.chapter.get_absolute_url }}">
+      <span>{% include "partials/_cover.html" with book=r.book %}</span>
+      <span>
+        <p class="resume__title">{{ r.book.title }}</p>
+        <p class="resume__meta">Chapter {{ r.chapter.number }} of {{ r.total }} · {{ r.updated_at|timesince }} ago</p>
+        <span class="progress" role="progressbar" aria-valuenow="{{ r.percent }}" aria-valuemin="0" aria-valuemax="100"><i style="width: {{ r.percent }}%"></i></span>
+      </span>
+      <span class="resume__go" aria-hidden="true">→</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="wrap">
+  <div class="daily-strip">
+    <div>
+      <h2>{% if daily.claimed %}Daily Ink collected{% else %}Your Daily Ink is ready{% endif %}</h2>
+      <p>{% if daily.claimed %}Come back tomorrow for +{{ daily.reward }} coins.{% else %}+{{ daily.reward }} free coins today. Keep the streak going.{% endif %}</p>
+    </div>
+    <ol class="days" aria-label="Streak: {{ daily.streak }} day{{ daily.streak|pluralize }}">
+      {% for d in daily.days %}<li class="{% if d.filled %}is-filled{% elif d.next %}is-next{% endif %}"><span>{{ d.n }}</span><i></i></li>{% endfor %}
+    </ol>
+    {% if not daily.claimed %}
+    <form method="post" action="{% url 'wallet:daily' %}">{% csrf_token %}<input type="hidden" name="next" value="/"><button class="btn btn--primary" type="submit">Collect +{{ daily.reward }}</button></form>
+    {% else %}
+    <a class="btn btn--ghost" href="{% url 'wallet:home' %}">Wallet</a>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{% if top_ten %}
+<section class="wrap section">
+  <header class="section-head"><div><p class="eyebrow">This week</p><h2>Top 10 on InkHobby</h2></div><a href="{% url 'books:browse' %}?sort=trending">See all →</a></header>
+  <ol class="rank">
+    {% for book in top_ten %}
+    <li class="rank__item">
+      <a class="rank__cover" href="{{ book.get_absolute_url }}" aria-label="{{ book.title }}">{% include "partials/_cover.html" %}</a>
+      <div class="rank__info">
+        <h3 class="book-card__title"><a href="{{ book.get_absolute_url }}">{{ book.title }}</a></h3>
+        <p class="book-card__author">{{ book.author.profile.display_name }}</p>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+</section>
+{% endif %}
+
+{% if genres %}
+<section class="wrap section">
+  <header class="section-head"><div><p class="eyebrow">Find your next obsession</p><h2>Browse by genre</h2></div></header>
+  <ul class="genre-tiles">
+    {% for g in genres %}<li><a class="genre-tile" href="{{ g.get_absolute_url }}"><span class="genre-tile__name">{{ g.name }}</span><span class="genre-tile__blurb">{{ g.blurb }}</span></a></li>{% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if exclusives %}
+<section class="wrap section">
+  <header class="section-head"><div><p class="eyebrow">Only on InkHobby</p><h2>Exclusives</h2></div></header>
+  <div class="rail">{% for book in exclusives %}{% include "partials/_book_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+
+{% if fresh %}
+<section class="wrap section">
+  <header class="section-head"><div><p class="eyebrow">Just updated</p><h2>New chapters</h2></div><a href="{% url 'books:browse' %}?sort=updated">See all →</a></header>
+  <ul class="rows">{% for book in fresh %}{% include "partials/_book_row.html" %}{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section class="band">
+  <div class="wrap band__inner">
+    <div>
+      <h2>Write it. Publish it. Get paid for every chapter.</h2>
+      <p class="lede">Exclusive and non-exclusive contracts, a job board for editors and proofreaders, and readers who unlock your work chapter by chapter.</p>
+    </div>
+    <a class="btn btn--primary btn--lg" href="{% url 'careers:benefits' %}">See author benefits</a>
+  </div>
+</section>
+{% endblock %}

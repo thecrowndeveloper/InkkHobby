@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load ink %}
+
+{% block title %}{{ book.title }} by {{ book.author.profile.display_name }} · {{ SITE_NAME }}{% endblock %}
+{% block meta_description %}{{ book.synopsis|truncatewords:30 }}{% endblock %}
+{% block og %}
+<meta property="og:type" content="book">
+<meta property="og:title" content="{{ book.title }}">
+<meta property="og:description" content="{{ book.synopsis|truncatewords:30 }}">
+<meta property="og:url" content="{{ share_url }}">
+{% if book.cover %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ book.cover.url }}">{% endif %}
+{% endblock %}
+
+{% block main %}
+<section class="book-hero">
+  <div class="spot__bg" style="--h: {{ book.cover_hue }}"></div>
+  <div class="wrap book-hero__grid">
+    <div class="book-hero__cover">{% include "partials/_cover.html" %}</div>
+    <div class="book-hero__info">
+      <p class="chips">
+        <span class="chip">{{ book.get_kind_display }}</span>
+        <span class="chip">{{ book.get_status_display }}</span>
+        {% if contract %}<span class="chip">{{ contract.get_contract_type_display }} on InkHobby</span>{% endif %}
+        {% if book.mature %}<span class="chip chip--warn">Mature</span>{% endif %}
+      </p>
+      <h1>{{ book.title }}</h1>
+      <p class="byline">by <a href="{% url 'books:writer' book.author.pk %}">{{ book.author.profile.display_name }}</a></p>
+
+      <ul class="stats">
+        <li><strong class="rating">{% if book.avg_rating %}★ {{ book.avg_rating|floatformat:1 }}{% else %}New{% endif %}</strong><span>{{ book.review_count }} review{{ book.review_count|pluralize }}</span></li>
+        <li><strong>{{ book.word_count|compact }}</strong><span>words</span></li>
+        <li><strong>{{ book.word_count|read_length }}</strong><span>to read</span></li>
+        <li><strong>{{ chapters|length }}</strong><span>chapters</span></li>
+        <li><strong>{{ book.library_count|compact }}</strong><span>in libraries</span></li>
+        <li><strong>{{ book.views|compact }}</strong><span>views</span></li>
+      </ul>
+
+      <div class="actions">
+        {% if resume %}
+          <a class="btn btn--primary btn--lg" href="{{ resume.get_absolute_url }}">Continue chapter {{ resume.number }}</a>
+        {% elif first_chapter %}
+          <a class="btn btn--primary btn--lg" href="{{ first_chapter.get_absolute_url }}">Start reading</a>
+        {% endif %}
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'books:library_toggle' book.slug %}">{% csrf_token %}
+            <button class="btn btn--ghost btn--lg" type="submit">{% if in_library %}✓ In library{% else %}+ Library{% endif %}</button>
+          </form>
+          {% if user != book.author %}
+          <form method="post" action="{% url 'books:follow' book.author.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+            <button class="btn btn--ghost btn--lg" type="submit">{% if following %}Following{% else %}Follow author{% endif %}</button>
+          </form>
+          {% endif %}
+        {% else %}
+          <a class="btn btn--ghost btn--lg" href="{% url 'account_login' %}?next={{ request.path|urlencode }}">Sign in to save</a>
+        {% endif %}
+      </div>
+
+      {% include "partials/_share.html" with share_title=book.title %}
+    </div>
+  </div>
+</section>
+
+<nav class="subnav" aria-label="On this page">
+  <div class="wrap"><a href="#about">About</a><a href="#chapters">Chapters</a><a href="#reviews">Reviews</a></div>
+</nav>
+
+<div class="wrap book-body">
+  <div>
+    <section id="about">
+      <h2>About this story</h2>
+      <div class="prose">{{ book.synopsis|paragraphs }}</div>
+      <p class="chips">{% for g in book.genres.all %}<a class="chip" href="{{ g.get_absolute_url }}">{{ g.name }}</a>{% endfor %}</p>
+    </section>
+
+    <section id="chapters">
+      <h2>Chapters</h2>
+      {% if chapters %}
+      <ol class="toc">
+        {% for ch in chapters %}
+        <li {% if resume and resume.pk == ch.pk %}class="is-current"{% endif %}>
+          <a href="{{ ch.get_absolute_url }}">
+            <span class="toc__num">{{ ch.number }}</span>
+            <span class="toc__title">{{ ch.title }}</span>
+            <span class="toc__meta">{{ ch.word_count|compact }} words</span>
+            {% if ch.is_free %}<span class="tag tag--free">Free</span>
+            {% elif ch.id in unlocked_ids %}<span class="tag tag--open">Unlocked</span>
+            {% else %}<span class="tag tag--lock"><span class="coin" aria-hidden="true"></span>{{ ch.price }}</span>{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}<p class="empty">No chapters have been published yet.</p>{% endif %}
+    </section>
+  </div>
+
+  <aside id="reviews">
+    <h2>Reader reviews</h2>
+    {% if user.is_authenticated %}
+    <form class="card form" method="post" action="{% url 'books:review' book.slug %}">{% csrf_token %}
+      <p class="eyebrow">{% if my_review %}Update your review{% else %}Rate this story{% endif %}</p>
+      {{ review_form.as_p }}
+      <button class="btn btn--dark btn--sm" type="submit">{% if my_review %}Update{% else %}Post review{% endif %}</button>
+    </form>
+    {% else %}
+    <p class="card"><a href="{% url 'account_login' %}?next={{ request.path|urlencode }}">Sign in</a> to rate and review this story.</p>
+    {% endif %}
+
+    <ul class="reviews">
+      {% for r in reviews %}
+      <li class="review">
+        <p class="review__head"><strong>{{ r.user.profile.display_name }}</strong> {% stars r.rating %}</p>
+        {% if r.text %}<p>{{ r.text }}</p>{% endif %}
+        <p class="muted">{{ r.updated_at|date:"j M Y" }}</p>
+      </li>
+      {% empty %}<li class="muted">No reviews yet. Be the first.</li>{% endfor %}
+    </ul>
+  </aside>
+</div>
+{% endblock %}

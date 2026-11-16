@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% load ink %}
+
+{% block title %}{{ chapter.title }} · {{ book.title }} · {{ SITE_NAME }}{% endblock %}
+{% block og %}
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ book.title }}: Chapter {{ chapter.number }}">
+<meta property="og:description" content="{{ book.synopsis|truncatewords:30 }}">
+<meta property="og:url" content="{{ share_url }}">
+{% endblock %}
+
+{% block main %}
+<div class="reader-progress" data-progress aria-hidden="true"></div>
+
+<div class="reader-shell" data-reader data-reader-theme="night" data-chapter-url="{% url 'books:translate' book.slug chapter.number %}">
+  <div class="reader-bar">
+    <div class="wrap reader-bar__inner">
+      <a class="reader-bar__back" href="{{ book.get_absolute_url }}">← {{ book.title }}</a>
+      <div class="reader-tools" role="group" aria-label="Reading settings">
+        <button type="button" data-size="-1" aria-label="Smaller text">A−</button>
+        <button type="button" data-size="1" aria-label="Larger text">A+</button>
+        <button type="button" data-width aria-label="Change line width">Width</button>
+        <select data-reader-theme-select aria-label="Reading theme">
+          <option value="night">Dark</option><option value="paper">Light</option><option value="sepia">Sepia</option>
+        </select>
+        {% if readable %}
+        <select data-translate aria-label="Translate this chapter">
+          <option value="">Translate</option>
+          {% for code, label in languages %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <article class="reader">
+    <header class="reader__head">
+      <p class="eyebrow">Chapter {{ chapter.number }}</p>
+      <h1>{{ chapter.title }}</h1>
+      <p class="muted">{{ chapter.word_count|compact }} words · {{ chapter.word_count|read_length }} read</p>
+    </header>
+
+    {% if readable %}
+      <div class="reader__text" data-text>{{ chapter.body|paragraphs }}</div>
+      <p class="reader__status" data-translate-status role="status" hidden></p>
+      <button class="btn btn--ghost btn--sm" type="button" data-show-original hidden>Show original</button>
+    {% else %}
+      <div class="reader__text reader__text--preview">{{ preview|para_list }}</div>
+      <div class="gate">
+        <h2>Keep reading chapter {{ chapter.number }}</h2>
+        {% if user.is_authenticated %}
+          <p class="muted">Unlock it for <strong><span class="coin" aria-hidden="true"></span>{{ chapter.price }} coins</strong>. You have <strong>{{ my_profile.coins }}</strong>.</p>
+          {% if my_profile.coins >= chapter.price %}
+          <form method="post" action="{% url 'wallet:unlock' chapter.id %}">{% csrf_token %}<button class="btn btn--primary btn--lg" type="submit">Unlock chapter</button></form>
+          {% else %}
+          <div class="actions">
+            {% if not daily.claimed %}
+            <form method="post" action="{% url 'wallet:daily' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="btn btn--primary" type="submit">Collect Daily Ink +{{ daily.reward }}</button></form>
+            {% endif %}
+            <a class="btn btn--ghost" href="{% url 'wallet:home' %}">Get more coins</a>
+          </div>
+          {% endif %}
+        {% else %}
+          <p class="muted">Sign in to unlock this chapter with your free Daily Ink coins.</p>
+          <div class="actions">
+            <a class="btn btn--primary btn--lg" href="{% url 'account_login' %}?next={{ request.path|urlencode }}">Sign in</a>
+            <a class="btn btn--ghost btn--lg" href="{% url 'account_signup' %}">Join free</a>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <nav class="chapter-nav" aria-label="Chapter navigation">
+      {% if prev_chapter %}<a class="btn btn--ghost" href="{{ prev_chapter.get_absolute_url }}" data-prev>← Previous</a>{% else %}<span></span>{% endif %}
+      <a class="btn btn--ghost" href="{{ book.get_absolute_url }}#chapters">Chapters</a>
+      {% if next_chapter and readable %}<a class="btn btn--primary" href="{{ next_chapter.get_absolute_url }}" data-next>Next chapter →</a>{% else %}<span></span>{% endif %}
+    </nav>
+
+    {% include "partials/_share.html" with share_title=share_title %}
+
+    {% if readable %}
+    <section class="comments" id="comments">
+      <h2>Comments</h2>
+      {% if user.is_authenticated %}
+      <form class="form" method="post" action="{% url 'books:comment' book.slug chapter.number %}">{% csrf_token %}
+        {{ comment_form.as_p }}
+        <button class="btn btn--dark btn--sm" type="submit">Post comment</button>
+      </form>
+      {% else %}
+      <p class="muted"><a href="{% url 'account_login' %}?next={{ request.path|urlencode }}">Sign in</a> to join the conversation.</p>
+      {% endif %}
+      <ul class="comment-list">
+        {% for c in comments %}
+        <li><p><strong>{{ c.user.profile.display_name }}</strong> <span class="muted">· {{ c.created_at|timesince }} ago</span></p><p>{{ c.body }}</p></li>
+        {% empty %}<li class="muted">No comments yet.</li>{% endfor %}
+      </ul>
+    </section>
+    {% endif %}
+  </article>
+</div>
+{% endblock %}

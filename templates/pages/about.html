@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}About us · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="wrap wrap--narrow section prose-page">
+  <p class="eyebrow">About us</p>
+  <h1>A reading room, not a feed.</h1>
+  <p class="lede">InkHobby began with a simple belief: a story deserves to be received the way a good meal is. Unhurried, beautifully presented, and remembered long after.</p>
+
+  <h2>For readers</h2>
+  <p>Read web novels, fanfiction, manga and anime stories in a reading room built around the text. Careful typography, calm themes, and nothing shouting for your attention. The opening chapters are always free, and Daily Ink brings you coins each day to keep going.</p>
+
+  <h2>For writers</h2>
+  <p>Publish your work, earn from the chapters readers unlock, and choose between exclusive and non-exclusive contracts. Need extra income between chapters? Our job board connects editors, proofreaders, translators and writers with paid work.</p>
+
+  <h2>For everyone</h2>
+  <p>Stories should cross borders. Signed-in readers can translate chapters into many languages, so a good story is never stranded in the language it was written in.</p>
+
+  <p class="ornament" aria-hidden="true">❦</p>
+  <p>Questions, ideas or a story you can't stop thinking about? <a href="{% url 'pages:contact' %}">We'd love to hear from you.</a></p>
+</section>
+{% endblock %}

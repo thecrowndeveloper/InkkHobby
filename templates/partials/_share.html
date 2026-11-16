@@ -1,0 +1,8 @@
+<div class="share" data-share data-url="{{ share_url }}" data-title="{{ share_title }}">
+  <span class="share__label">Share</span>
+  <a href="https://twitter.com/intent/tweet?url={{ share_url|urlencode:'' }}&amp;text={{ share_title|urlencode:'' }}" target="_blank" rel="noopener noreferrer">X</a>
+  <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode:'' }}" target="_blank" rel="noopener noreferrer">Facebook</a>
+  <a href="https://wa.me/?text={{ share_title|urlencode:'' }}%20{{ share_url|urlencode:'' }}" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+  <a href="https://t.me/share/url?url={{ share_url|urlencode:'' }}&amp;text={{ share_title|urlencode:'' }}" target="_blank" rel="noopener noreferrer">Telegram</a>
+  <button type="button" data-copy-link>Copy link</button>
+</div>

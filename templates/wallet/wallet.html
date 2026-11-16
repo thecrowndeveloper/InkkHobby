@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}My well · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="wrap section">
+  <header class="page-head"><p class="eyebrow">Coins</p><h1>Your well</h1></header>
+
+  <div class="wallet-grid">
+    <div class="card well-card">
+      <p class="eyebrow">Balance</p>
+      <p class="balance"><span class="coin coin--lg" aria-hidden="true"></span>{{ my_profile.coins }}</p>
+      <p class="muted">Spend coins to unlock chapters. Daily Ink refills the well for free.</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Daily Ink</p>
+      <ol class="drops" aria-label="Streak: day {{ daily.streak }}">
+        {% for i in "1234567" %}<li class="{% if forloop.counter <= daily.cycle %}is-filled{% endif %}"></li>{% endfor %}
+      </ol>
+      <p class="muted">{% if daily.claimed %}Collected today. Tomorrow: +{{ daily.reward }}.{% else %}Today's gift: +{{ daily.reward }} coins.{% endif %} Streak: {{ daily.streak }} day{{ daily.streak|pluralize }}.</p>
+      {% if not daily.claimed %}
+      <form method="post" action="{% url 'wallet:daily' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}"><button class="btn btn--gold" type="submit">Collect +{{ daily.reward }}</button></form>
+      {% endif %}
+    </div>
+  </div>
+
+  <h2>Top up</h2>
+  {% if mock_payments %}<p class="notice">Test mode: these packs add coins without charging anything. A real payment gateway is connected before launch.</p>{% endif %}
+  <div class="packs">
+    {% for pack in packs %}
+    <form class="card pack" method="post" action="{% url 'wallet:buy' pack.code %}">{% csrf_token %}
+      <p class="pack__coins"><span class="coin" aria-hidden="true"></span>{{ pack.coins }}</p>
+      <p class="muted">{{ pack.price_label }}</p>
+      <button class="btn btn--dark btn--sm" type="submit" {% if not mock_payments %}disabled{% endif %}>{% if mock_payments %}Add (test){% else %}Buy{% endif %}</button>
+    </form>
+    {% endfor %}
+  </div>
+
+  <h2>History</h2>
+  <table class="table">
+    <thead><tr><th>Date</th><th>What</th><th class="num">Coins</th><th class="num">Balance</th></tr></thead>
+    <tbody>
+      {% for t in transactions %}
+      <tr><td>{{ t.created_at|date:"j M, H:i" }}</td><td>{{ t.get_kind_display }}{% if t.note %} <span class="muted">· {{ t.note }}</span>{% endif %}</td><td class="num {% if t.amount < 0 %}neg{% else %}pos{% endif %}">{{ t.amount|stringformat:"+d" }}</td><td class="num">{{ t.balance_after }}</td></tr>
+      {% empty %}<tr><td colspan="4" class="muted">No activity yet. Collect your first Daily Ink above.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

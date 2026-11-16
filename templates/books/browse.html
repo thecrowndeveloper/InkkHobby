@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{% if q %}Results for “{{ q }}”{% elif genre %}{{ genre.name }}{% else %}Browse{% endif %} · {{ SITE_NAME }}{% endblock %}
+
+{% block main %}
+<section class="wrap section">
+  <header class="page-head">
+    <p class="eyebrow">{% if q %}Search{% elif genre %}Genre{% else %}The full menu{% endif %}</p>
+    <h1>{% if q %}“{{ q }}”{% elif genre %}{{ genre.name }}{% else %}Browse stories{% endif %}</h1>
+    {% if genre and genre.blurb %}<p class="lede">{{ genre.blurb }}</p>{% endif %}
+  </header>
+
+  <nav class="genre-pills" aria-label="Genres">
+    <a class="pill {% if not genre %}is-active{% endif %}" href="{% url 'books:browse' %}">All</a>
+    {% for g in genres %}<a class="pill {% if genre and genre.pk == g.pk %}is-active{% endif %}" href="{{ g.get_absolute_url }}">{{ g.name }}</a>{% endfor %}
+  </nav>
+
+  <form class="filters" method="get">
+    <label>Search<input type="search" name="q" value="{{ q }}" placeholder="Title, author, genre"></label>
+    <label>Format
+      <select name="kind"><option value="">Any</option>{% for value, label in kinds %}<option value="{{ value }}" {% if value == kind %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </label>
+    <label>Status
+      <select name="status"><option value="">Any</option>{% for value, label in statuses %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </label>
+    <label>Sort
+      <select name="sort">{% for value, label in sorts.items %}<option value="{{ value }}" {% if value == sort %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    </label>
+    <button class="btn btn--dark btn--sm" type="submit">Apply</button>
+  </form>
+
+  {% if page.object_list %}
+  <div class="grid">{% for book in page %}{% include "partials/_book_card.html" %}{% endfor %}</div>
+  {% include "partials/_pagination.html" %}
+  {% else %}
+  <p class="empty">Nothing matches that just yet. Try a broader search, or <a href="{% url 'books:browse' %}">browse the full menu</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

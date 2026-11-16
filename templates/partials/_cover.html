@@ -1,0 +1,11 @@
+{% if book.cover %}
+  <img class="cover cover--img" src="{{ book.cover.url }}" alt="Cover of {{ book.title }}" loading="lazy">
+{% else %}
+  <div class="cover cover--gen cover--v{{ book.cover_variant }}" style="--h: {{ book.cover_hue }}" role="img" aria-label="Cover of {{ book.title }}">
+    <div class="cover__in">
+      <span class="cover__kind">{{ book.get_kind_display }}</span>
+      <span class="cover__title">{{ book.title }}</span>
+      <span class="cover__author">{{ book.author.profile.display_name }}</span>
+    </div>
+  </div>
+{% endif %}

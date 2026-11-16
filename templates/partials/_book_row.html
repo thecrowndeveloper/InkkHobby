@@ -1,0 +1,12 @@
+{% load ink %}
+<li>
+  <a class="row" href="{{ book.get_absolute_url }}">
+    <span class="row__cover">{% include "partials/_cover.html" %}</span>
+    <span>
+      <p class="row__title">{{ book.title }}</p>
+      <p class="row__meta">{{ book.author.profile.display_name }} · {{ book.get_kind_display }}{% for g in book.genres.all|slice:":2" %} · {{ g.name }}{% endfor %}</p>
+      <p class="row__meta">{{ book.chapter_count }} chapter{{ book.chapter_count|pluralize }} · updated {{ book.updated_at|timesince }} ago</p>
+    </span>
+    <span class="row__side">{% if book.avg_rating %}★ {{ book.avg_rating|floatformat:1 }}{% endif %}</span>
+  </a>
+</li>

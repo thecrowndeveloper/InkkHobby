@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Jobs for writers · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="wrap section">
+  <header class="page-head">
+    <p class="eyebrow">Work</p>
+    <h1>Jobs for writers</h1>
+    <p class="lede">Editing, proofreading, translation and writing work from InkHobby and our authors.</p>
+  </header>
+  <nav class="genre-pills" aria-label="Job categories">
+    <a class="pill {% if not category %}is-active{% endif %}" href="{% url 'careers:jobs' %}">All</a>
+    {% for value, label in categories %}<a class="pill {% if category == value %}is-active{% endif %}" href="?category={{ value }}">{{ label }}</a>{% endfor %}
+  </nav>
+  <ul class="job-list">
+    {% for job in page %}
+    <li><a class="card job" href="{{ job.get_absolute_url }}">
+      <p class="eyebrow">{{ job.get_category_display }}</p>
+      <h3>{{ job.title }}</h3>
+      <p class="muted">{{ job.language }}{% if job.remote %} · Remote{% endif %}{% if job.pay %} · {{ job.pay }}{% endif %}</p>
+    </a></li>
+    {% empty %}<li class="empty">No open roles in this category right now.</li>{% endfor %}
+  </ul>
+  {% include "partials/_pagination.html" %}
+</section>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}For authors · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="hero hero--author">
+  <div class="wrap wrap--narrow">
+    <p class="eyebrow">For authors</p>
+    <h1>Write the story. <em>We'll set the table.</em></h1>
+    <p class="lede">InkHobby is built so writers can be read, rewarded and respected. Here's what you receive when you publish with us.</p>
+  </div>
+</section>
+
+<section class="wrap section">
+  <div class="perks">
+    <article class="card"><h3>Paid per chapter</h3><p>Readers unlock chapters with coins, and you earn your contract share of every coin spent on your story.</p></article>
+    <article class="card"><h3>Contracts that fit</h3><p>Exclusive or non-exclusive. Choose depth with InkHobby or keep your rights open.</p></article>
+    <article class="card"><h3>Read in any language</h3><p>Readers can translate your chapters into dozens of languages, so your audience isn't limited by yours.</p></article>
+    <article class="card"><h3>A stage worth standing on</h3><p>Trending shelves, genre pages and a reading room designed to make every chapter feel like an occasion.</p></article>
+    <article class="card"><h3>Your readers, closer</h3><p>Reviews, chapter comments, library saves and followers show you exactly who loves your work.</p></article>
+    <article class="card"><h3>Work beyond your own pages</h3><p>Take on editing, proofreading, translation and writing jobs from our <a href="{% url 'careers:jobs' %}">job board</a>.</p></article>
+  </div>
+
+  <header class="section-head"><div><p class="eyebrow">Contracts</p><h2>Two ways to publish with us</h2></div></header>
+  <div class="contracts">
+    {% for c in contracts %}
+    <article class="card contract">
+      <p class="eyebrow">{{ c.name }}</p>
+      <p class="contract__share">{{ c.share }}%<span> author share</span></p>
+      <p>{{ c.summary }}</p>
+      <ul class="ticks">{% for perk in c.perks %}<li>{{ perk }}</li>{% endfor %}</ul>
+    </article>
+    {% endfor %}
+  </div>
+  <p class="muted">Final terms are set out in your contract and may differ by story.</p>
+
+  <div class="apply" id="apply">
+    {% if my_profile.is_author %}
+      <h2>You're one of our authors.</h2>
+      <p class="muted">Welcome. Publishing tools are on their way; until then, our team can add your stories for you. <a href="{% url 'pages:contact' %}">Get in touch</a>.</p>
+    {% elif application and application.status == "pending" %}
+      <h2>Your application is with our editors.</h2>
+      <p class="muted">Submitted {{ application.created_at|date:"j M Y" }} as <strong>{{ application.pen_name }}</strong>. We'll email you once it's been read.</p>
+    {% else %}
+      <h2>Apply to become an author</h2>
+      {% if application and application.status == "declined" %}<p class="notice">Your last application wasn't accepted this time. You're welcome to apply again with fresh work.</p>{% endif %}
+      <form class="card form" method="post" action="{% url 'careers:author_apply' %}">{% csrf_token %}
+        {{ form.as_p }}
+        <button class="btn btn--gold btn--lg" type="submit">Send application</button>
+      </form>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

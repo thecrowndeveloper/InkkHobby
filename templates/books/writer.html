@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ writer.profile.display_name }} · {{ SITE_NAME }}{% endblock %}
+{% block main %}
+<section class="wrap section">
+  <header class="page-head writer-head">
+    <span class="avatar avatar--lg">{{ writer.profile.display_name|slice:":1"|upper }}</span>
+    <div>
+      <p class="eyebrow">{% if writer.profile.is_author %}Author{% else %}Reader{% endif %}</p>
+      <h1>{{ writer.profile.display_name }}</h1>
+      <p class="muted">{{ follower_count }} follower{{ follower_count|pluralize }}</p>
+      {% if writer.profile.bio %}<p class="lede">{{ writer.profile.bio }}</p>{% endif %}
+      {% if user.is_authenticated and user != writer %}
+      <form method="post" action="{% url 'books:follow' writer.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.path }}">
+        <button class="btn btn--gold" type="submit">{% if following %}Following{% else %}Follow{% endif %}</button>
+      </form>
+      {% endif %}
+    </div>
+  </header>
+  <h2>Stories</h2>
+  {% if books %}<div class="grid">{% for book in books %}{% include "partials/_book_card.html" %}{% endfor %}</div>
+  {% else %}<p class="empty">No published stories yet.</p>{% endif %}
+</section>
+{% endblock %}
